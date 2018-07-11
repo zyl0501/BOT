@@ -1,0 +1,62 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.ray.router'
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+
+    defaultConfig { applicationId "com.ray.router"
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [moduleName: "AppModule"]
+            }
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file("./doc/debug/debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+    }
+
+    buildTypes {
+        debug {
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            minifyEnabled true
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    implementation 'com.android.support:appcompat-v7:' + rootProject.ext.lib_version.supportLibVersion
+    testImplementation 'junit:junit:4.12'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
+
+    implementation project(path: ':moduletest')
+    implementation project(path: ':router-rx')
+    annotationProcessor project(':router-compiler')
+
+//    implementation 'com.ray:router-rx:'+rootProject.ext.lib_version.routerVersion
+//    annotationProcessor 'com.ray:router-compiler:'+rootProject.ext.lib_version.routerVersion
+
+}
+

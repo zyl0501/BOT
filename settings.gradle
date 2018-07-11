@@ -1,0 +1,7 @@
+include ':app'
+include ':moduletest'
+include ':router'
+include ':router-rx'
+include ':router-compiler'
+include ':router-annotations'
+include ':router-gradle-plugin'

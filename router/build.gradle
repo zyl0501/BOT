@@ -1,0 +1,56 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    buildToolsVersion rootProject.ext.android.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+//    compile 'com.android.support:appcompat-v7:' + rootProject.ext.lib_version.supportLibVersion
+    api 'com.android.support:support-annotations:' + rootProject.ext.lib_version.supportLibVersion
+    api 'com.android.support:support-fragment:' + rootProject.ext.lib_version.supportLibVersion
+    api project(':router-annotations')
+    implementation 'com.google.code.gson:gson:2.8.0'
+    testImplementation 'junit:junit:4.12'
+    testImplementation files(getRuntimeJar())
+}
+
+//指定编译的编码
+tasks.withType(Javadoc){
+    options.encoding = "UTF-8"
+}
+
+def getRuntimeJar() {
+    try {
+        final File javaBase = new File(System.getProperty("java.home")).getCanonicalFile();
+        File runtimeJar = new File(javaBase, "lib/rt.jar");
+        if (runtimeJar.exists()) {
+            return runtimeJar;
+        }
+        runtimeJar = new File(javaBase, "jre/lib/rt.jar");
+        return runtimeJar.exists() ? runtimeJar : null;
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }
+}
+
+apply from: '../gradle/gradle-bintray-push.gradle'

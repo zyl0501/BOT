@@ -1,0 +1,9 @@
+apply plugin: 'groovy'
+
+dependencies {
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation "com.android.tools.build:gradle:${android.androidPluginVersion}"
+}
+
+apply from: '../gradle/gradle-bintray-push.gradle'

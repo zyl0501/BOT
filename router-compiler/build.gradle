@@ -1,0 +1,22 @@
+apply plugin: 'java'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.squareup:javapoet:1.8.0'
+    implementation 'com.google.auto.service:auto-service:1.0-rc3'
+    implementation 'com.google.auto:auto-common:0.6'
+    implementation 'org.apache.commons:commons-lang3:3.4'
+    implementation 'org.apache.commons:commons-collections4:4.1'
+    compile project(':router-annotations')
+//    compile 'com.ray.router.annotation:router-annotation:'+rootProject.ext.lib_version.routerAnnotationVersion
+}
+
+//指定编译的编码
+tasks.withType(Javadoc){
+    options.encoding = "UTF-8"
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
+apply from: '../gradle/gradle-bintray-push.gradle'

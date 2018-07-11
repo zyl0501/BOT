@@ -1,0 +1,119 @@
+apply plugin: rootProject.ext.plugins.maven
+apply plugin: rootProject.ext.plugins.bintray
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+version = project.ext.maven.version
+group = project.ext.maven.group
+
+def siteUrl = project.ext.maven.siteUrl
+def gitUrl = project.ext.maven.gitUrl
+
+// project.license
+def licenseName = project.ext.maven.licenseName
+def licenseUrl = project.ext.maven.licenseUrl
+
+// project.developers
+def developerId = project.ext.maven.developerId
+def developerName = project.ext.maven.developerName
+def developerEmail = project.ext.maven.developerEmail
+
+//bintray
+def bintrayUser = project.ext.maven.bintrayUser
+def bintrayKey = project.ext.maven.bintrayApiKey
+def bintrayLicense = project.ext.maven.bintrayLicense
+
+if (licenseName == null || licenseName.isEmpty()) licenseName = 'The Apache Software License, Version 2.0'
+if (licenseUrl == null || licenseUrl.isEmpty()) licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+if (developerId == null || developerId.isEmpty()) developerId = properties.getProperty("bintray.developer.id")
+if (developerName == null || developerName.isEmpty()) developerName = properties.getProperty("bintray.developer.name")
+if (developerEmail == null || developerEmail.isEmpty()) developerEmail = properties.getProperty("bintray.developer.email")
+if (bintrayUser == null || bintrayUser.isEmpty()) bintrayUser = properties.getProperty("bintray.user")
+if (bintrayKey == null || bintrayKey.isEmpty()) bintrayKey = properties.getProperty("bintray.apikey")
+if (bintrayLicense == null || bintrayLicense.isEmpty()) bintrayLicense = 'Apache-2.0'
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging project.ext.maven.packaging
+                name project.ext.maven.name
+                description project.ext.maven.description
+                url siteUrl
+                licenses {
+                    license {
+                        name licenseName
+                        url licenseUrl
+                    }
+                }
+                developers {
+                    developer {
+                        id developerId
+                        name developerName
+                        email developerEmail
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+                }
+            }
+        }
+    }
+}
+
+tasks.withType(Javadoc) {
+    options.encoding = "UTF-8"
+}
+
+task sourcesJar(type: Jar) {
+    if(plugins.hasPlugin('java')){
+        from sourceSets.main.allSource
+    }else {
+        from android.sourceSets.main.java.srcDirs
+    }
+    classifier = 'sources'
+}
+task javadoc2(type: Javadoc) {
+    if(plugins.hasPlugin('java')){
+        source = sourceSets.main.allSource;
+    }else {
+        source = android.sourceSets.main.java.srcDirs
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+    failOnError false
+}
+task javadocJar(type: Jar, dependsOn: javadoc2) {
+    classifier = 'javadoc'
+    //noinspection GroovyAccessibility
+    from javadoc2.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayKey
+
+    configurations = ['archives']
+    pkg {
+        repo = project.ext.maven.bintrayRepo
+        name = project.ext.maven.bintrayName
+        userOrg = project.ext.maven.bintrayOrg
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = [bintrayLicense]
+        publish = true
+//        version {
+//            gpg {
+//                sign = true
+//                passphrase = properties.getProperty("bintray.gpg.password")
+//            }
+//        }
+    }
+}

@@ -1,0 +1,10 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.ray.router.core">
+
+    <application
+    >
+
+        <activity android:name="com.ray.router.facade.action.ResultHolderActivity" />
+    </application>
+
+</manifest>
