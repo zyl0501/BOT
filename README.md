@@ -126,7 +126,7 @@ dependencies {
 ```
 
 6.可以使用注册 Service 的方式
-```
+``` java
     public interface TestService {
         @Route("/school")
         Call<Bundle> testActivity(Context context1, @RouteCtx Context context2, @Query("b") boolean b, @Query("school_id") int id);
@@ -142,4 +142,9 @@ dependencies {
         @Route("/school")
         Observable<Bundle> test3(Context context, @Query("b") boolean b, @Query("school_id") int id);
     }
+```
+``` java
+	Router.I().service(TestService.class)
+		  .test()
+		  ...
 ```
